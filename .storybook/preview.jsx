@@ -2,6 +2,8 @@ import { RouterContext } from 'next/dist/shared/lib/router-context'
 
 import '../src/styles/globals.css'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
   controls: {
@@ -10,19 +12,25 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  nextRouter: {
+    Provider: RouterContext.Provider,
+  },
 }
 
 export const decorators = [
-  (Story) => (
-    <RouterContext.Provider
-      value={{
-        // actionsを使いたい
-        push: (path) => alert(`router push: { path: ${path} }`),
-        replace: () => Promise.resolve(),
-        prefetch: () => Promise.resolve(),
-      }}
-    >
+  (Story) =>
+    isProduction ? (
       <Story />
-    </RouterContext.Provider>
-  ),
+    ) : (
+      <RouterContext.Provider
+        value={{
+          // actionsを使いたい
+          push: (path) => alert(`router push: { path: ${path} }`),
+          replace: () => Promise.resolve(),
+          prefetch: () => Promise.resolve(),
+        }}
+      >
+        <Story />
+      </RouterContext.Provider>
+    ),
 ]
