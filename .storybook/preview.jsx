@@ -1,8 +1,11 @@
 import { RouterContext } from 'next/dist/shared/lib/router-context'
+import { initialize, mswDecorator } from 'msw-storybook-addon'
 
 import '../src/styles/globals.css'
 
 const isProduction = process.env.NODE_ENV === 'production'
+
+initialize()
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -33,4 +36,5 @@ export const decorators = [
         <Story />
       </RouterContext.Provider>
     ),
+  mswDecorator,
 ]
