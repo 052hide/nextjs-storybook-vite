@@ -20,7 +20,6 @@ export const decorators = [
   (Story) => (
     <RouterContext.Provider
       value={{
-        // actionsを使いたい
         push: (...args) => {
           action('nextRouter.push')(...args)
           return Promise.resolve(true)
