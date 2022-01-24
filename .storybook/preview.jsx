@@ -1,9 +1,8 @@
 import { RouterContext } from 'next/dist/shared/lib/router-context'
 import { initialize, mswDecorator } from 'msw-storybook-addon'
+import { action } from '@storybook/addon-actions'
 
 import '../src/styles/globals.css'
-
-const isProduction = process.env.NODE_ENV === 'production'
 
 initialize()
 
@@ -15,26 +14,29 @@ export const parameters = {
       date: /Date$/,
     },
   },
-  nextRouter: {
-    Provider: RouterContext.Provider,
-  },
 }
 
 export const decorators = [
-  (Story) =>
-    isProduction ? (
+  (Story) => (
+    <RouterContext.Provider
+      value={{
+        // actionsを使いたい
+        push: (...args) => {
+          action('nextRouter.push')(...args)
+          return Promise.resolve(true)
+        },
+        replace(...args) {
+          action('nextRouter.replace')(...args)
+          return Promise.resolve(true)
+        },
+        prefetch(...args) {
+          action('nextRouter.prefetch')(...args)
+          return Promise.resolve()
+        },
+      }}
+    >
       <Story />
-    ) : (
-      <RouterContext.Provider
-        value={{
-          // actionsを使いたい
-          push: (path) => alert(`router push: { path: ${path} }`),
-          replace: () => Promise.resolve(),
-          prefetch: () => Promise.resolve(),
-        }}
-      >
-        <Story />
-      </RouterContext.Provider>
-    ),
+    </RouterContext.Provider>
+  ),
   mswDecorator,
 ]
